@@ -6,6 +6,7 @@
 * @Title: To connect mysql database with python.
 '''
 
+import re
 import mysql.connector
 import os
 from dotenv import load_dotenv
@@ -174,14 +175,30 @@ class BaiscQueries:
         try:
 
             sql = "INSERT INTO StudentDetails(RollNo,Name,Marks,Grade) VALUES(%s,%s,%s,%s)"
-            val = [(5,'Karthik',35,'C'),(9,'Vivek',58,'B'),(12,'Jaya',22,'D')]
+            val = [(5,'Karthik',35,'C'),(9,'Vivek',58,'B'),(12,'Jaya',22,'D'),(19,'Samarth',100,'A')]
             self.db_cursor.executemany(sql,val)
             self.db_connection.commit()
-            # self.display_table()
+            self.display_table()
 
         except Exception as e:
             logger.error(e)
 
+    def drop_table(self):
+        """
+        Description: This function is to remove the existing tabel.
+        
+        """
+
+        try:
+
+            self.db_cursor.execute("USE students_sheet")
+            self.db_cursor.execute("DROP TABLE StudentDetails")
+            self.db_connection.commit()
+
+        except Exception as e:
+            logger.error(e)
+
+        
     def delete(self):
         """
         Description: This function is to delete a row from table using name.
@@ -209,6 +226,110 @@ class BaiscQueries:
             
             for details in self.db_cursor:
                 print(details)
+
+        except Exception as e:
+            logger.error(e)
+
+    def group_by(self):
+        """
+        Description: This function is to group the rows based on marks.
+        
+        """
+        try:
+            self.db_cursor.execute("SELECT Name,SUM(Marks) FROM StudentDetails GROUP BY Name")
+            result = self.db_cursor.fetchall()
+            print("After Grouping: ")
+            for details in result:
+                print(details[0],' ',details[1])
+
+        except Exception as e:
+            logger.error(e)
+
+    def limit(self):
+        """
+        Description: This function is to limit the return of rows.
+        
+        """
+        try:
+            self.db_cursor.execute("SELECT * FROM StudentDetails LIMIT 3 ")
+            result = self.db_cursor.fetchall()
+            print("After limiting: ")
+            for details in result:
+                print(details)
+
+        except Exception as e:
+            logger.error(e)
+
+    def distinct(self):
+        """
+        Description: This function is to get the different values.
+        
+        """
+
+        try:
+
+            self.db_cursor.execute("SELECT DISTINCT Marks FROM StudentDetails ")
+            result = self.db_cursor.fetchall()
+            print("Distinct marks: ")
+            for details in result:
+                print(details[0])
+
+        except Exception as e:
+            logger.error(e)
+
+
+    def like(self):
+        """
+        Description: This function is to execute the LIKE.
+        
+        """
+        try:
+            self.db_cursor.execute("SELECT * FROM StudentDetails WHERE Name LIKE 'S%'")
+            result = self.db_cursor.fetchall()
+            print("Name starting with S")
+            for details in result:
+                print(details)
+
+            self.db_cursor.execute("SELECT * FROM StudentDetails WHERE Name LIKE '%l'")
+            result = self.db_cursor.fetchall()
+            print("Name ending with l")
+            for details in result:
+                print(details)
+
+            self.db_cursor.execute("SELECT * FROM StudentDetails WHERE Name LIKE '%th%'")
+            result = self.db_cursor.fetchall()
+            print("Name containing 'th'")
+            for details in result:
+                print(details)
+
+            self.db_cursor.execute("SELECT * FROM StudentDetails WHERE Name LIKE 'j%a'")
+            result = self.db_cursor.fetchall()
+            print("Name starting with 'j' and ending with 'a'")
+            for details in result:
+                print(details)
+
+            self.db_cursor.execute("SELECT * FROM StudentDetails WHERE Name LIKE '%k_%'")
+            result = self.db_cursor.fetchall()
+            print("Name starting with 'k' and atleast having it 2 times")
+            for details in result:
+                print(details)
+
+        except Exception as e:
+            logger.error(e)
+
+
+    def having(self):
+        """
+        Description: This function is to execute HAVING clause in a aggregate function.
+        
+        """
+        try:
+
+            self.db_cursor.execute("SELECT Name,SUM(Marks) FROM StudentDetails GROUP BY Name HAVING SUM(Marks) > 35")
+            result = self.db_cursor.fetchall()
+            print("Sum of marks greater than 35: ")
+            for details in result:
+                print(details[0],' ',details[1])
 
         except Exception as e:
             logger.error(e)
@@ -258,4 +379,11 @@ if __name__ == "__main__":
     queries.insert_many()
     queries.delete()
     queries.orderby()
+    queries.group_by()
+    queries.limit()
+    queries.distinct()
+    queries.like()
+    queries.having()
     queries.aggregate_functions()
+    # queries.drop_table()
+  
