@@ -181,6 +181,26 @@ class Joins:
         except Exception as e:
             logger.error(e)
 
+    def full_outer_join(self):
+        """
+        Description: This function is to perform full outer join.
+        
+        """
+        try:
+
+            print("\nFull outer join join:")
+            self.db_cursor.execute("""SELECT * FROM college
+                                    LEFT JOIN hostel ON college.College_ID = hostel.Hostel_ID
+                                    UNION ALL 
+                                    SELECT * FROM college
+                                    RIGHT JOIN hostel ON college.College_ID = hostel.Hostel_ID""")
+
+            for details in self.db_cursor:
+                    print(details)
+
+        except Exception as e:
+            logger.error(e)
+
 
 if __name__ == "__main__":
     join = Joins()
@@ -190,3 +210,4 @@ if __name__ == "__main__":
     join.right_join()
     join.cross_join()
     join.self_join()
+    join.full_outer_join()
